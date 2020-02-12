@@ -128,6 +128,29 @@ set_target_properties(pg_dmitigr_nso
   LINKER_LANGUAGE "CXX"
   POSITION_INDEPENDENT_CODE True)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(pg_dmitigr_nso PRIVATE
+    -fno-exceptions
+    -pedantic
+    -Wall
+    -Wextra
+    -Wswitch)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_compile_options(pg_dmitigr_nso PRIVATE
+    -fno-exceptions
+    -pedantic
+    -Weverything)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  target_compile_options(pg_dmitigr_nso PRIVATE
+    /W4
+    /wd4127
+    /wd4200
+    /Zc:referenceBinding
+    /errorReport:none
+    /nologo
+    /utf-8)
+endif()
+
 # ------------------------------------------------------------------------------
 
 install(TARGETS pg_dmitigr_nso

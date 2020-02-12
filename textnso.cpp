@@ -183,10 +183,7 @@ struct Cmp_obj final {
       else
         return 1;
     }
-
-    // Should not happen.
-    elog(ERROR, "unknown comparison object type");
-    return 0;
+    Assert(!true);
   }
 
   /// @returns Pointer to the null-terminated wide string.
