@@ -11,14 +11,23 @@ set(pg_dmitigr_nso_version_minor 1)
 # ------------------------------------------------------------------------------
 
 enable_language(CXX)
-set(CMAKE_CXX_STANDARD 11)
+if (UNIX)
+  set(CMAKE_CXX_STANDARD 11)
+elseif(WIN32)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 set(CXX_STANDARD_REQUIRED ON)
 
 # ------------------------------------------------------------------------------
 
+if(NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING
+    "Build type: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
+
 if(NOT DEFINED PG_INCLUDE_DIR_SERVER)
   set(PG_INCLUDE_DIR_SERVER "" CACHE
-    PATH "Path to header files for the PostgreSQL server")
+    PATH "Path to header files of the PostgreSQL server")
 endif()
 
 if ("${PG_INCLUDE_DIR_SERVER}" STREQUAL "")
@@ -29,10 +38,28 @@ if ("${PG_INCLUDE_DIR_SERVER}" STREQUAL "")
   if (${status} EQUAL 0)
     string(STRIP "${PG_INCLUDE_DIR_SERVER}" PG_INCLUDE_DIR_SERVER)
   else()
-    message(FATAL_ERROR "Could not determine the location of header files for the PostgreSQL server")
+    message(FATAL_ERROR "Could not determine the location of header files of the PostgreSQL server")
   endif()
 endif()
 get_filename_component(PG_INCLUDE_DIR_SERVER "${PG_INCLUDE_DIR_SERVER}" ABSOLUTE)
+
+if(NOT DEFINED PG_PKGLIB_DIR)
+  set(PG_PKGLIB_DIR "" CACHE
+    PATH "Path to dynamically loadable modules of the PostgreSQL server")
+endif()
+
+if ("${PG_LIB_DIR}" STREQUAL "")
+  execute_process(COMMAND "pg_config" "--libdir"
+    RESULT_VARIABLE status
+    OUTPUT_VARIABLE PG_LIB_DIR
+    )
+  if (${status} EQUAL 0)
+    string(STRIP "${PG_LIB_DIR}" PG_LIB_DIR)
+  else()
+    message(FATAL_ERROR "Could not determine the location of object code libraries of the PostgreSQL server")
+  endif()
+endif()
+get_filename_component(PG_LIB_DIR "${PG_LIB_DIR}" ABSOLUTE)
 
 if(NOT DEFINED PG_PKGLIB_DIR)
   set(PG_PKGLIB_DIR "" CACHE
@@ -70,15 +97,25 @@ if ("${PG_SHARE_DIR}" STREQUAL "")
 endif()
 get_filename_component(PG_SHARE_DIR "${PG_SHARE_DIR}" ABSOLUTE)
 
-message("Using \"${PG_INCLUDE_DIR_SERVER}\" as the location of header files for the PostgreSQL server")
+message("Using \"${PG_INCLUDE_DIR_SERVER}\" as the location of header files of the PostgreSQL server")
+message("Using \"${PG_LIB_DIR}\" as the location of object code libraries of the PostgreSQL server")
 message("Using \"${PG_PKGLIB_DIR}\" as the location of dynamically loadable modules of the PostgreSQL server")
 message("Using \"${PG_SHARE_DIR}/extension\" as the location of the PostgreSQL server extensions")
 
 # ------------------------------------------------------------------------------
 
 include_directories(BEFORE ${PG_INCLUDE_DIR_SERVER})
+if (WIN32)
+  include_directories(BEFORE
+    ${PG_INCLUDE_DIR_SERVER}/port/win32_msvc
+    ${PG_INCLUDE_DIR_SERVER}/port/win32)
+endif()
 
 add_library(pg_dmitigr_nso SHARED textnso.cpp)
+
+if (WIN32)
+  target_link_libraries(pg_dmitigr_nso PRIVATE "${PG_LIB_DIR}/postgres.lib")
+endif()
 
 #find_package(ICU COMPONENTS i18n uc data REQUIRED)
 #target_compile_definitions(pg_dmitigr_nso PUBLIC -DUSE_ICU)
@@ -89,8 +126,7 @@ set_target_properties(pg_dmitigr_nso
   PREFIX ""
   OUTPUT_NAME "dmitigr_nso"
   LINKER_LANGUAGE "CXX"
-  POSITION_INDEPENDENT_CODE True
-  DEBUG_POSTFIX "d")
+  POSITION_INDEPENDENT_CODE True)
 
 # ------------------------------------------------------------------------------
 

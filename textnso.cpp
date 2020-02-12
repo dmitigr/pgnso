@@ -54,6 +54,8 @@ using Textnso = varlena;
 // I/O
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_in(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_in);
 
 Datum textnso_in(PG_FUNCTION_ARGS)
@@ -62,6 +64,8 @@ Datum textnso_in(PG_FUNCTION_ARGS)
 }
 
 // -----------------------------------------------------------------------------
+
+PGDLLEXPORT Datum textnso_out(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(textnso_out);
 
@@ -72,6 +76,8 @@ Datum textnso_out(PG_FUNCTION_ARGS)
 
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_recv(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_recv);
 
 Datum textnso_recv(PG_FUNCTION_ARGS)
@@ -80,6 +86,8 @@ Datum textnso_recv(PG_FUNCTION_ARGS)
 }
 
 // -----------------------------------------------------------------------------
+
+PGDLLEXPORT Datum textnso_send(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(textnso_send);
 
@@ -276,7 +284,11 @@ struct Wcs final {
     std::memcpy(str_copy, str, str_size);
     str_copy[str_size] = '\0';
 
+#ifndef _WIN32
     wcs.size_ = std::mbstowcs(wcs.data_, str_copy, str_size);
+#else
+    wcs.size_ = ::mbstowcs(wcs.data_, str_copy, str_size);
+#endif
     if (wcs.size_ == static_cast<std::size_t>(-1))
       ereport(ERROR,
         (errcode(ERRCODE_INVALID_PARAMETER_VALUE),
@@ -397,6 +409,8 @@ static int textnso_op_impl(PG_FUNCTION_ARGS)
 
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_lt(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_lt);
 
 Datum textnso_lt(PG_FUNCTION_ARGS)
@@ -405,6 +419,8 @@ Datum textnso_lt(PG_FUNCTION_ARGS)
 }
 
 // -----------------------------------------------------------------------------
+
+PGDLLEXPORT Datum textnso_le(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(textnso_le);
 
@@ -415,6 +431,8 @@ Datum textnso_le(PG_FUNCTION_ARGS)
 
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_eq(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_eq);
 
 Datum textnso_eq(PG_FUNCTION_ARGS)
@@ -423,6 +441,8 @@ Datum textnso_eq(PG_FUNCTION_ARGS)
 }
 
 // -----------------------------------------------------------------------------
+
+PGDLLEXPORT Datum textnso_ne(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(textnso_ne);
 
@@ -433,6 +453,8 @@ Datum textnso_ne(PG_FUNCTION_ARGS)
 
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_ge(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_ge);
 
 Datum textnso_ge(PG_FUNCTION_ARGS)
@@ -442,6 +464,8 @@ Datum textnso_ge(PG_FUNCTION_ARGS)
 
 // -----------------------------------------------------------------------------
 
+PGDLLEXPORT Datum textnso_gt(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(textnso_gt);
 
 Datum textnso_gt(PG_FUNCTION_ARGS)
@@ -450,6 +474,8 @@ Datum textnso_gt(PG_FUNCTION_ARGS)
 }
 
 // -----------------------------------------------------------------------------
+
+PGDLLEXPORT Datum textnso_cmp(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(textnso_cmp);
 

@@ -72,10 +72,11 @@ variables which can be passed to CMake for customization.
 
 |CMake variable|Description|Default|
 |:-------------|:----------|:------|
-|**The type of the build**|||
+|**The type of the build (not meaningful on Windows)**|||
 |CMAKE_BUILD_TYPE|`Debug` \| `Release` \| `RelWithDebInfo` \| `MinSizeRel`|`Release`|
 |**Locations**|||
-|PG_INCLUDE_DIR_SERVER|Path to header files for the PostgreSQL server|*$(pg_config --includedir-server)*|
+|PG_INCLUDE_DIR_SERVER|Path to header files of the PostgreSQL server|*$(pg_config --includedir-server)*|
+|PG_LIB_DIR|Path to object code libraries of the PostgreSQL server|*$(pg_config --libdir)*|
 |PG_PKGLIB_DIR|Path to dynamically loadable modules of the PostgreSQL server|*$(pg_config --pkglibdir)*|
 |PG_SHARE_DIR|Path to architecture-independent support files of the PostgreSQL server|*$(pg_config --sharedir)*|
 
@@ -101,7 +102,7 @@ Run Developer Command Prompt for Visual Studio and type:
     > mkdir pgnso\build
     > cd pgnso\build
     > cmake -G "Visual Studio 15 2017 Win64" ..
-    > cmake --build .
+    > cmake --build . --config Release
 
 Next, run the elevated command prompt and type:
 
