@@ -198,7 +198,7 @@ struct Cmp_obj final {
   /// @brief Resets the internal state, but do not deallocates the memory.
   void clear()
   {
-    static_assert(sizeof(stack_data_) > 0);
+    static_assert(sizeof(stack_data_) > 0, "invalid stack data size");
     Assert(data_);
 
     *data_ = L'\0';
@@ -306,7 +306,7 @@ struct Wcs final {
   /// @brief Resets the internal state, but preserves the memory.
   void clear()
   {
-    static_assert(sizeof(stack_data_) > 0);
+    static_assert(sizeof(stack_data_) > 0, "invalid stack data size");
     Assert(data_);
     *data_ = L'\0';
     size_ = {};

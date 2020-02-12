@@ -11,11 +11,7 @@ set(pg_dmitigr_nso_version_minor 1)
 # ------------------------------------------------------------------------------
 
 enable_language(CXX)
-if (UNIX)
-  set(CMAKE_CXX_STANDARD 11)
-elseif(WIN32)
-  set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 11)
 set(CXX_STANDARD_REQUIRED ON)
 
 # ------------------------------------------------------------------------------
@@ -131,7 +127,7 @@ set_target_properties(pg_dmitigr_nso
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(pg_dmitigr_nso PRIVATE
     -fno-exceptions
-    -pedantic
+#    -pedantic
     -Wall
     -Wextra
     -Wswitch)
