@@ -355,12 +355,12 @@ static int textnso_cmp_internal(const char* const lhs, const int lhs_size,
   // Currently works only with default collation.
   if (coll_id != DEFAULT_COLLATION_OID)
     ereport(ERROR,
-      (errmsg("only default collation is supported by strwnum type")));
+      (errmsg("only default collation is supported by textnso type")));
 
   // Currently works only with UTF8 encoding.
   if (GetDatabaseEncoding() != PG_UTF8)
     ereport(ERROR,
-      (errmsg("only UTF-8 encoding is supported by strwnum type")));
+      (errmsg("only UTF-8 encoding is supported by textnso type")));
 
   int result{};
   Wcs lhs_wcs;
