@@ -128,9 +128,11 @@ struct Cmp_obj final {
     if (std::iswdigit(static_cast<wint_t>(*p))) {
       obj.type_ = Type::num;
 
-      // First, skip zeroes.
-      while (*p != L'\0' && *p == L'0')
+      // First, skip zeros.
+      while (*p != L'\0' && *p == L'0') {
+        ++obj.skipped_zeros_count_;
         ++p;
+      }
 
       while (*p != L'\0' && std::iswdigit(static_cast<wint_t>(*p))) {
         ++obj.size_;
@@ -161,7 +163,8 @@ struct Cmp_obj final {
     Assert(rhs.data_);
 
     if (*lhs.data_ == L'\0' && *rhs.data_ == L'\0')
-      return 0;
+      return (lhs.skipped_zeros_count() == rhs.skipped_zeros_count()) ? 0 :
+        (lhs.skipped_zeros_count() < rhs.skipped_zeros_count()) ? -1 : 1;
     else if (*lhs.data_ == L'\0')
       return -1;
     else if (*rhs.data_ == L'\0')
@@ -196,6 +199,9 @@ struct Cmp_obj final {
   /// @returns The size of wide string in characters.
   std::size_t size() const { return size_; }
 
+  /// @returns The number of leading zeros which was skipped.
+  std::size_t skipped_zeros_count() const { return skipped_zeros_count_; }
+
   /// @returns The type of comparison object.
   Type type() const { return type_; }
 
@@ -207,6 +213,7 @@ struct Cmp_obj final {
 
     *data_ = L'\0';
     size_ = {};
+    skipped_zeros_count_ = {};
     type_ = {};
   }
 
@@ -246,6 +253,7 @@ private:
   wchar_t stack_data_[stack_data_size]; // optimization
   wchar_t* data_{stack_data_};
   std::size_t size_{};
+  std::size_t skipped_zeros_count_{};
   std::size_t capacity_{stack_data_size - 1}; // optimization
   Type type_{};
 };
