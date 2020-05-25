@@ -178,9 +178,13 @@ struct Cmp_obj final {
       } else
         return -1;
     } else {
-      if (rhs.type_ == Type::str)
+      if (rhs.type_ == Type::str) {
+#ifdef DMITIGR_PGNSO_STRCMP_LOCALE
         return std::wcscoll(lhs.data_, rhs.data_);
-      else
+#else
+        return std::wcscmp(lhs.data_, rhs.data_);
+#endif
+      } else
         return 1;
     }
     Assert(!true);

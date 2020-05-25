@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.10)
 project(pg_dmitigr_nso CXX)
 
 set(pg_dmitigr_nso_version_major 0)
-set(pg_dmitigr_nso_version_minor 1)
+set(pg_dmitigr_nso_version_minor 2)
 
 # ------------------------------------------------------------------------------
 
@@ -93,10 +93,14 @@ if ("${PG_SHARE_DIR}" STREQUAL "")
 endif()
 get_filename_component(PG_SHARE_DIR "${PG_SHARE_DIR}" ABSOLUTE)
 
+set(DMITIGR_PGNSO_STRCMP_LOCALE False CACHE BOOL
+  "Compare strings according to the locale (or lexicographically if not)?")
+
 message("Using \"${PG_INCLUDE_DIR_SERVER}\" as the location of header files of the PostgreSQL server")
 message("Using \"${PG_LIB_DIR}\" as the location of object code libraries of the PostgreSQL server")
 message("Using \"${PG_PKGLIB_DIR}\" as the location of dynamically loadable modules of the PostgreSQL server")
 message("Using \"${PG_SHARE_DIR}/extension\" as the location of the PostgreSQL server extensions")
+message("Compare strings according to the locale: ${DMITIGR_PGNSO_STRCMP_LOCALE}")
 
 # ------------------------------------------------------------------------------
 
@@ -111,6 +115,10 @@ add_library(pg_dmitigr_nso SHARED textnso.cpp)
 
 if (WIN32)
   target_link_libraries(pg_dmitigr_nso PRIVATE "${PG_LIB_DIR}/postgres.lib")
+endif()
+
+if (DMITIGR_PGNSO_STRCMP_LOCALE)
+  target_compile_definitions(pg_dmitigr_nso PRIVATE DMITIGR_PGNSO_STRCMP_LOCALE)
 endif()
 
 #find_package(ICU COMPONENTS i18n uc data REQUIRED)
